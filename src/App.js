@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { nanoid } from "nanoid";
 import "./App.css";
 import data from "./mock-data.json";
 
@@ -42,7 +43,9 @@ const App = () => {
 
   const handleAddContactFormSubmit = (event) => {
     event.preventDefault();
-    const newContacts = [...contacts, addFormData];
+    const newContact = { ...addFormData, id: nanoid() };
+
+    const newContacts = [...contacts, newContact];
     setContacts(newContacts);
   };
 
@@ -197,7 +200,7 @@ const App = () => {
           name="email"
           onChange={handleAddFormChange}
         />
-        <button>Add</button>
+        <button type="submit">Add</button>
       </form>
     </div>
   );
