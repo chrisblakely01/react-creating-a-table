@@ -31,9 +31,8 @@ form {
   gap: 5px;
 }
 
-form td:last-child {
-  display: flex;
-  justify-content: space-evenly;
+form td:last-child button:nth-of-type(1) {
+  margin-right: 5px;
 }
 
 form * {

@@ -1,23 +1,27 @@
-import React, { useState } from "react";
-import { nanoid } from "nanoid";
+import React, { useState, Fragment } from "react";
 import "./App.css";
 import data from "./mock-data.json";
+import ReadOnlyRow from "./components/ReadOnlyRow";
+import EditableRow from "./components/EditableRow";
+import { nanoid } from "nanoid";
 
 const App = () => {
   const [contacts, setContacts] = useState(data);
   const [addFormData, setAddFormData] = useState({
-    name: "",
+    fullName: "",
     address: "",
     phoneNumber: "",
     email: "",
   });
+
   const [editFormData, setEditFormData] = useState({
-    name: "",
+    fullName: "",
     address: "",
     phoneNumber: "",
     email: "",
   });
-  const [editRowId, setEditRowId] = useState(null);
+
+  const [editContactId, setEditContactId] = useState(null);
 
   const handleAddFormChange = (event) => {
     event.preventDefault();
@@ -28,6 +32,21 @@ const App = () => {
     newFormData[fieldName] = fieldValue;
 
     setAddFormData(newFormData);
+  };
+
+  const handleAddContactFormSubmit = (event) => {
+    event.preventDefault();
+
+    const newContact = {
+      id: nanoid(),
+      fullName: addFormData.fullName,
+      address: addFormData.address,
+      phoneNumber: addFormData.phoneNumber,
+      email: addFormData.email,
+    };
+
+    const newContacts = [...contacts, newContact];
+    setContacts(newContacts);
   };
 
   const handleEditFormChange = (event) => {
@@ -41,28 +60,41 @@ const App = () => {
     setEditFormData(newFormData);
   };
 
-  const handleAddContactFormSubmit = (event) => {
-    event.preventDefault();
-    const newContact = { ...addFormData, id: nanoid() };
-
-    const newContacts = [...contacts, newContact];
-    setContacts(newContacts);
-  };
-
   const handleEditContactFormSubmit = (event) => {
     event.preventDefault();
+
+    const editedContact = {
+      id: editContactId,
+      fullName: editFormData.fullName,
+      address: editFormData.address,
+      phoneNumber: editFormData.phoneNumber,
+      email: editFormData.email,
+    };
+
     const newContacts = [...contacts];
 
-    const index = contacts.findIndex((contact) => contact.id === editRowId);
-    newContacts[index] = editFormData;
+    const index = contacts.findIndex((contact) => contact.id === editContactId);
+    newContacts[index] = editedContact;
     setContacts(newContacts);
-    setEditRowId(null);
+    setEditContactId(null);
   };
 
   const handleEditClick = (event, contact) => {
     event.preventDefault();
-    setEditRowId(contact.id);
-    setEditFormData(contact);
+    setEditContactId(contact.id);
+
+    const formValues = {
+      fullName: contact.fullName,
+      address: contact.address,
+      phoneNumber: contact.phoneNumber,
+      email: contact.email,
+    };
+
+    setEditFormData(formValues);
+  };
+
+  const handleCancelClick = () => {
+    setEditContactId(null);
   };
 
   const handleDeleteClick = (contactId) => {
@@ -74,14 +106,9 @@ const App = () => {
     setContacts(newContacts);
   };
 
-  const handleCancelClick = () => {
-    setEditRowId(null);
-  };
-
   return (
     <div className="app-container">
-      <h1>My Contacts</h1>
-      <form id="edit-form" onSubmit={handleEditContactFormSubmit}>
+      <form onSubmit={handleEditContactFormSubmit}>
         <table>
           <thead>
             <tr>
@@ -93,111 +120,54 @@ const App = () => {
             </tr>
           </thead>
           <tbody>
-            {contacts.map((contact) => (
-              <React.Fragment key={contact.id}>
-                {editRowId === contact.id ? (
-                  <tr>
-                    <td>
-                      <input
-                        type="text"
-                        required="required"
-                        placeholder="Name"
-                        name="name"
-                        value={editFormData.name}
-                        onChange={handleEditFormChange}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        required="required"
-                        placeholder="Address"
-                        name="address"
-                        value={editFormData.address}
-                        onChange={handleEditFormChange}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        required="required"
-                        placeholder="Phone Number"
-                        name="phoneNumber"
-                        value={editFormData.phoneNumber}
-                        onChange={handleEditFormChange}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        required="required"
-                        placeholder="Email"
-                        name="email"
-                        value={editFormData.email}
-                        onChange={handleEditFormChange}
-                      />
-                    </td>
-                    <td>
-                      <button type="submit">Save</button>
-                      <button onClick={handleCancelClick}>Cancel</button>
-                    </td>
-                  </tr>
+            {contacts.map((contact, index) => (
+              <Fragment>
+                {editContactId === contact.id ? (
+                  <EditableRow
+                    editFormData={editFormData}
+                    handleEditFormChange={handleEditFormChange}
+                    handleCancelClick={handleCancelClick}
+                  />
                 ) : (
-                  <tr>
-                    <td>{contact.name}</td>
-                    <td>{contact.address}</td>
-                    <td>{contact.phoneNumber}</td>
-                    <td>{contact.email}</td>
-                    <td>
-                      <button
-                        type="button"
-                        onClick={(event) => handleEditClick(event, contact)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteClick(contact.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
+                  <ReadOnlyRow
+                    contact={contact}
+                    handleEditClick={handleEditClick}
+                    handleDeleteClick={handleDeleteClick}
+                  />
                 )}
-              </React.Fragment>
+              </Fragment>
             ))}
           </tbody>
         </table>
       </form>
-
       <h2>Add New Contact</h2>
       <form onSubmit={handleAddContactFormSubmit}>
         <input
           type="text"
+          name="fullName"
           required="required"
-          placeholder="Name"
-          name="name"
+          placeholder="Enter a name..."
           onChange={handleAddFormChange}
         />
         <input
           type="text"
-          required="required"
-          placeholder="Address"
           name="address"
+          required="required"
+          placeholder="Enter an address..."
           onChange={handleAddFormChange}
         />
         <input
           type="text"
-          required="required"
-          placeholder="Phone Number"
           name="phoneNumber"
+          required="required"
+          placeholder="Enter a phone number..."
           onChange={handleAddFormChange}
         />
         <input
           type="email"
-          required="required"
-          placeholder="Email"
           name="email"
+          required="required"
+          placeholder="Enter an email..."
           onChange={handleAddFormChange}
         />
         <button type="submit">Add</button>
