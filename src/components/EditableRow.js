@@ -11,41 +11,41 @@ const EditableRow = ({
         <input
           type="text"
           required="required"
-          placeholder="Name"
+          placeholder="Enter a name..."
           name="fullName"
           value={editFormData.fullName}
           onChange={handleEditFormChange}
-        />
+        ></input>
       </td>
       <td>
         <input
           type="text"
           required="required"
-          placeholder="Address"
+          placeholder="Enter an address..."
           name="address"
           value={editFormData.address}
           onChange={handleEditFormChange}
-        />
+        ></input>
       </td>
       <td>
         <input
           type="text"
           required="required"
-          placeholder="Phone Number"
+          placeholder="Enter a phone number..."
           name="phoneNumber"
           value={editFormData.phoneNumber}
           onChange={handleEditFormChange}
-        />
+        ></input>
       </td>
       <td>
         <input
-          type="text"
+          type="email"
           required="required"
-          placeholder="Email"
+          placeholder="Enter an email..."
           name="email"
           value={editFormData.email}
           onChange={handleEditFormChange}
-        />
+        ></input>
       </td>
       <td>
         <button type="submit">Save</button>

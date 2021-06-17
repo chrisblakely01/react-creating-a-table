@@ -1,9 +1,9 @@
 import React, { useState, Fragment } from "react";
+import { nanoid } from "nanoid";
 import "./App.css";
 import data from "./mock-data.json";
 import ReadOnlyRow from "./components/ReadOnlyRow";
 import EditableRow from "./components/EditableRow";
-import { nanoid } from "nanoid";
 
 const App = () => {
   const [contacts, setContacts] = useState(data);
@@ -25,6 +25,7 @@ const App = () => {
 
   const handleAddFormChange = (event) => {
     event.preventDefault();
+
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
 
@@ -34,7 +35,19 @@ const App = () => {
     setAddFormData(newFormData);
   };
 
-  const handleAddContactFormSubmit = (event) => {
+  const handleEditFormChange = (event) => {
+    event.preventDefault();
+
+    const fieldName = event.target.getAttribute("name");
+    const fieldValue = event.target.value;
+
+    const newFormData = { ...editFormData };
+    newFormData[fieldName] = fieldValue;
+
+    setEditFormData(newFormData);
+  };
+
+  const handleAddFormSubmit = (event) => {
     event.preventDefault();
 
     const newContact = {
@@ -49,18 +62,7 @@ const App = () => {
     setContacts(newContacts);
   };
 
-  const handleEditFormChange = (event) => {
-    event.preventDefault();
-    const fieldName = event.target.getAttribute("name");
-    const fieldValue = event.target.value;
-
-    const newFormData = { ...editFormData };
-    newFormData[fieldName] = fieldValue;
-
-    setEditFormData(newFormData);
-  };
-
-  const handleEditContactFormSubmit = (event) => {
+  const handleEditFormSubmit = (event) => {
     event.preventDefault();
 
     const editedContact = {
@@ -74,7 +76,9 @@ const App = () => {
     const newContacts = [...contacts];
 
     const index = contacts.findIndex((contact) => contact.id === editContactId);
+
     newContacts[index] = editedContact;
+
     setContacts(newContacts);
     setEditContactId(null);
   };
@@ -103,12 +107,13 @@ const App = () => {
     const index = contacts.findIndex((contact) => contact.id === contactId);
 
     newContacts.splice(index, 1);
+
     setContacts(newContacts);
   };
 
   return (
     <div className="app-container">
-      <form onSubmit={handleEditContactFormSubmit}>
+      <form onSubmit={handleEditFormSubmit}>
         <table>
           <thead>
             <tr>
@@ -120,7 +125,7 @@ const App = () => {
             </tr>
           </thead>
           <tbody>
-            {contacts.map((contact, index) => (
+            {contacts.map((contact) => (
               <Fragment>
                 {editContactId === contact.id ? (
                   <EditableRow
@@ -140,8 +145,9 @@ const App = () => {
           </tbody>
         </table>
       </form>
-      <h2>Add New Contact</h2>
-      <form onSubmit={handleAddContactFormSubmit}>
+
+      <h2>Add a Contact</h2>
+      <form onSubmit={handleAddFormSubmit}>
         <input
           type="text"
           name="fullName"
@@ -153,7 +159,7 @@ const App = () => {
           type="text"
           name="address"
           required="required"
-          placeholder="Enter an address..."
+          placeholder="Enter an addres..."
           onChange={handleAddFormChange}
         />
         <input
